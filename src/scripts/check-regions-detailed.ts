@@ -14,6 +14,6 @@ export default async function checkRegionsDetailed({ container }: ExecArgs) {
   console.table(regions.map(r => ({
     name: r.name,
     currency: r.currency_code,
-    countries: r.countries?.map(c => c.iso_2).join(", ")
+    countries: r.countries?.map(c => c!.iso_2).join(", ")
   })))
 }

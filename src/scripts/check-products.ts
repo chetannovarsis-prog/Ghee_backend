@@ -13,7 +13,7 @@ export default async function checkProducts({ container }: ExecArgs) {
   logger.info(`Found ${products.length} products:`)
   console.table(products.map(p => ({
     title: p.title,
-    categories: p.categories?.map(c => c.name).join(", "),
+    categories: p.categories?.map(c => c!.name).join(", "),
     collection: p.collection?.title || "None"
   })))
 }

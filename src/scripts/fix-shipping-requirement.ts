@@ -12,10 +12,10 @@ export default async function removeShippingFromProducts({ container }: ExecArgs
     logger.info("Fetching products with shipping profiles...")
     const { data: products } = await query.graph({
       entity: "product",
-      fields: ["id", "title", "shipping_profile_id"]
+      fields: ["id", "title", "shipping_profile"]
     })
 
-    const productsWithShipping = products.filter(p => p.shipping_profile_id)
+    const productsWithShipping = products.filter(p => (p as any).shipping_profile)
     logger.info(`Found ${productsWithShipping.length} products with shipping profiles`)
 
     if (productsWithShipping.length === 0) {
@@ -25,18 +25,16 @@ export default async function removeShippingFromProducts({ container }: ExecArgs
 
     // Update products using the query service
     logger.info("Updating products to remove shipping profiles...")
-    
+
     for (const product of productsWithShipping) {
-      await query.update([
-        {
-          entity: "product",
-          where: { id: product.id },
-          data: { shipping_profile_id: null }
-        }
-      ])
+      await (query as any).update({
+        entity: "product",
+        where: { id: product.id },
+        data: { shipping_profile: null }
+      })
       logger.info(`✓ Updated: ${product.title}`)
     }
-    
+
     logger.info(`✅ Successfully cleared shipping_profile_id from ${productsWithShipping.length} products`)
     logger.info("Orders can now be completed without shipping method configuration.")
   } catch (error: any) {

@@ -4,21 +4,20 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 export default async function checkShippingProfiles({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const db = container.resolve(ContainerRegistrationKeys.DB)
 
   logger.info("Checking products with shipping profiles...")
 
   const { data: products } = await query.graph({
     entity: "product",
-    fields: ["id", "title", "shipping_profile_id"]
+    fields: ["id", "title", "shipping_profile"]
   })
 
-  const productsWithShippingProfile = products.filter(p => p.shipping_profile_id)
-  
+  const productsWithShippingProfile = products.filter(p => (p as any).shipping_profile)
+
   logger.info(`\nFound ${productsWithShippingProfile.length} products with shipping profiles:`)
   console.table(productsWithShippingProfile.map(p => ({
     title: p.title,
-    shipping_profile_id: p.shipping_profile_id
+    shipping_profile: (p as any).shipping_profile
   })))
 
   logger.info("\nChecking available shipping options...")
@@ -31,7 +30,7 @@ export default async function checkShippingProfiles({ container }: ExecArgs) {
   console.table(shippingOptions.map(s => ({
     name: s.name,
     profile_id: s.shipping_profile_id,
-    status: s.status
+    status: (s as any).status
   })))
 
   if (shippingOptions.length === 0 && productsWithShippingProfile.length > 0) {

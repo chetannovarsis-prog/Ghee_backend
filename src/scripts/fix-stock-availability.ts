@@ -117,7 +117,7 @@ export default async function fixStockAvailability({ container }: ExecArgs) {
     for (const product of products) {
         for (const variant of product.variants || []) {
             logger.info(
-                `  ${product.title} / ${variant.title}: manage_inventory=${variant.manage_inventory}, inventory_quantity=${variant.inventory_quantity}`
+                `  ${product.title} / ${variant.title}: manage_inventory=${variant.manage_inventory}`
             )
         }
     }

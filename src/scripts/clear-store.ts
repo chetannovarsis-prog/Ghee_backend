@@ -17,9 +17,9 @@ export default async function clearStore({ container }: ExecArgs) {
     logger.info(`Deleted ${products.length} products`)
   }
 
-  const collections = await productModule.listCollections({}, { select: ["id"] })
+  const collections = await productModule.listProductCollections({}, { select: ["id"] })
   if (collections.length > 0) {
-    await productModule.deleteCollections(collections.map(c => c.id))
+    await productModule.deleteProductCollections(collections.map(c => c.id))
     logger.info(`Deleted ${collections.length} collections`)
   }
 

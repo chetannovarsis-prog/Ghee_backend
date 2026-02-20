@@ -4,7 +4,6 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 export default async function clearShippingProfiles({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const db = container.resolve(ContainerRegistrationKeys.DB)
 
   logger.info("Checking products and shipping options...")
 
@@ -23,18 +22,20 @@ export default async function clearShippingProfiles({ container }: ExecArgs) {
 
   const { data: products } = await query.graph({
     entity: "product",
-    fields: ["id", "title", "shipping_profile_id"]
+    fields: ["id", "title", "shipping_profile"]
   })
 
-  const productsWithShipping = products.filter(p => p.shipping_profile_id)
-  
+  const productsWithShipping = products.filter(p => (p as any).shipping_profile)
+
   logger.info(`Clearing shipping profile from ${productsWithShipping.length} products...`)
 
   try {
     // Update each product to remove shipping_profile_id
     for (const product of productsWithShipping) {
-      await db.managers.ProductManager.update(product.id, {
-        shipping_profile_id: null
+      await (query as any).update({
+        entity: "product",
+        where: { id: product.id },
+        data: { shipping_profile: null }
       })
       logger.info(`✓ Cleared shipping profile from: ${product.title}`)
     }

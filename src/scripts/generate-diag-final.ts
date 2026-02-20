@@ -23,7 +23,7 @@ export default async function generateDiag({ container }: ExecArgs) {
       title: p.title,
       status: p.status,
       collection: p.collection?.title,
-      sales_channels: p.sales_channels?.map(sc => sc.name)
+      sales_channels: p.sales_channels?.map(sc => sc!.name)
     })),
     collections: collections
   }

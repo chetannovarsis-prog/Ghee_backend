@@ -29,12 +29,14 @@ export default async function updateShippingPrice({ container }: ExecArgs) {
         if (opt.prices?.length > 0) {
             for (const price of opt.prices) {
                 try {
-                    await pricingModuleService.updatePrices([
-                        {
-                            id: price.id,
-                            amount: 0,
-                        },
-                    ])
+                    await (pricingModuleService as any).updatePriceSets(price.id, {
+                        prices: [
+                            {
+                                id: price.id,
+                                amount: 0,
+                            },
+                        ]
+                    })
                     logger.info(`✅ Updated price ${price.id} (${price.currency_code}) to 0`)
                 } catch (e: any) {
                     logger.error(`Failed to update price ${price.id}: ${e.message}`)

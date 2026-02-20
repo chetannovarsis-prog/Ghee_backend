@@ -12,15 +12,15 @@ export default async function diagnoseShippingIssue({ container }: ExecArgs) {
     logger.info("1. Checking PRODUCTS WITH VARIANTS...")
     const { data: products } = await query.graph({
       entity: "product",
-      fields: ["id", "title", "shipping_profile_id", "variants.id", "variants.title", "variants.shipping_profile_id"]
+      fields: ["id", "title", "shipping_profile", "variants.id", "variants.title", "variants.shipping_profile"]
     })
-    
+
     logger.info(`Found ${products.length} total products`)
     products.forEach(p => {
-      logger.info(`  Product: ${p.title} (product profile_id: ${p.shipping_profile_id || "null"})`)
+      logger.info(`  Product: ${p.title} (product profile: ${(p as any).shipping_profile || "null"})`)
       if (p.variants && p.variants.length > 0) {
         p.variants.forEach(v => {
-          logger.info(`    - Variant: ${v.title} (variant profile_id: ${v.shipping_profile_id || "null"})`)
+          logger.info(`    - Variant: ${v.title} (variant profile: ${(v as any).shipping_profile || "null"})`)
         })
       }
     })
@@ -31,7 +31,7 @@ export default async function diagnoseShippingIssue({ container }: ExecArgs) {
       entity: "shipping_profile",
       fields: ["id", "name", "type"]
     })
-    
+
     logger.info(`Found ${profiles.length} shipping profiles`)
     profiles.forEach(p => {
       logger.info(`  - ${p.name} (id: ${p.id}, type: ${p.type})`)
@@ -41,12 +41,12 @@ export default async function diagnoseShippingIssue({ container }: ExecArgs) {
     logger.info("\n3. Checking SHIPPING OPTIONS...")
     const { data: options } = await query.graph({
       entity: "shipping_option",
-      fields: ["id", "name", "shipping_profile_id", "region_id"]
+      fields: ["id", "name", "shipping_profile", "region_id"]
     })
-    
+
     logger.info(`Found ${options.length} shipping options`)
     options.forEach(o => {
-      logger.info(`  - ${o.name} (id: ${o.id}, profile_id: ${o.shipping_profile_id})`)
+      logger.info(`  - ${o.name} (id: ${o.id}, profile: ${(o as any).shipping_profile})`)
     })
 
     logger.info("\n=== DIAGNOSIS COMPLETE ===")

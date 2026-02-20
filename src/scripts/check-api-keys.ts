@@ -17,7 +17,7 @@ export default async function checkApiKeyLinks({ container }: ExecArgs) {
   console.table(apiKeys.map(k => ({
     id: k.id,
     title: k.title,
-    channels: k.sales_channels?.map(sc => sc.name).join(", ")
+    channels: k.sales_channels?.map(sc => sc!.name).join(", ")
   })))
 
   // Also log the first token for comparison with storefront .env

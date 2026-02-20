@@ -5,7 +5,7 @@ import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 export default async function fixProductImages({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  
+
   logger.info("Fixing product images with refreshed Unsplash URLs...")
 
   const productImagesMap: Record<string, string> = {
@@ -24,7 +24,7 @@ export default async function fixProductImages({ container }: ExecArgs) {
       fields: ["id", "handle"]
     })
 
-    const updates = []
+    const updates: any[] = []
     for (const product of products) {
       if (productImagesMap[product.handle]) {
         updates.push({

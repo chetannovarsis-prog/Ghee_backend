@@ -1,7 +1,11 @@
 console.log("Loading Razorpay Service file")
 import { AbstractPaymentProvider, BigNumber } from "@medusajs/framework/utils"
-import { 
-  Logger, 
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import {
+  Logger,
   CapturePaymentInput,
   CapturePaymentOutput,
   AuthorizePaymentInput,
@@ -73,8 +77,8 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
   }
 
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, customer } = input
-    
+    const { amount, currency_code } = input
+
     try {
       const order = await this.razorpay_.orders.create({
         amount: Math.round(Number(amount) * 100), // Razorpay expected amount in paise
@@ -105,13 +109,13 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
     const orderId = (data as any).id
 
     try {
-        const order = await this.razorpay_.orders.fetch(orderId)
-        if (order.status === "paid") {
-            return { status: "captured" }
-        }
-        return { status: "pending" }
+      const order = await this.razorpay_.orders.fetch(orderId)
+      if (order.status === "paid") {
+        return { status: "captured" }
+      }
+      return { status: "pending" }
     } catch (error) {
-        return { status: "error" }
+      return { status: "error" }
     }
   }
 
@@ -126,11 +130,11 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
   }
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
-      return {
-          data: {
-              ...(input.data || {}),
-          }
+    return {
+      data: {
+        ...(input.data || {}),
       }
+    }
   }
 
   async getWebhookActionAndData(payload: ProviderWebhookPayload["payload"]): Promise<WebhookActionResult> {

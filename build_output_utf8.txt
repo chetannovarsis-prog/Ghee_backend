@@ -1,0 +1,180 @@
+﻿
+> my-medusa-store@0.0.1 build
+> medusa build
+
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Generating types...
+[32minfo[39m:    No link to load from E:\Neeraj\Ghee-main\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\links. skipped.
+Loading Razorpay Service file
+Loading Razorpay Module index.ts
+Imported RazorpayProviderService: [class RazorpayProviderService extends AbstractPaymentProvider] {
+  identifier: 'razorpay'
+}
+Exporting services: [
+  [class RazorpayProviderService extends AbstractPaymentProvider] {
+    identifier: 'razorpay'
+  }
+]
+[32minfo[39m:    Types generated successfully
+[32minfo[39m:    Starting build...
+[32minfo[39m:    Compiling backend source...
+[32minfo[39m:    Removing existing ".medusa\server" folder
+[32minfo[39m:    Compiling frontend source...
+npm : [96msrc/scripts
+/clear-shipping-profil
+es.ts[0m:[93m35[0m:
+[93m19[0m - 
+[91merror[0m[90m 
+TS2339: [0mProperty 
+'update' does not 
+exist on type 'Omit<Re
+moteQueryFunction, 
+symbol>'.
+At line:1 char:1
++ npm run build > 
+build_output.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ([96msrc/s   
+ cript...tion, sym    
+bol>'.:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+
+[7m35[0m       
+await query.update([{
+[7m  [0m [91m      
+            ~~~~~~[0m
+[96msrc/scripts/disab
+le-shipping-requiremen
+ts.ts[0m:[93m28[0m:
+[93m43[0m - 
+[91merror[0m[90m 
+TS2552: [0mCannot 
+find name 'Modules'. 
+Did you mean 'module'?
+
+[7m28[0m   const 
+productModule = contai
+ner.resolve(Modules.PR
+ODUCT)
+[7m  [0m [91m      
+                      
+              
+~~~~~~~[0m
+
+  [96mnode_modules/@t
+ypes/node/module.d.ts
+[0m:[93m521[0m:[93m
+13[0m
+    [7m521[0m       
+  var module: 
+NodeJS.Module;
+    [7m   [0m [96m 
+           ~~~~~~[0m
+    'module' is 
+declared here.
+[96msrc/scripts/disab
+le-shipping-requiremen
+ts.ts[0m:[93m32[0m:
+[93m19[0m - 
+[91merror[0m[90m 
+TS2339: [0mProperty 
+'update' does not 
+exist on type 'Omit<Re
+moteQueryFunction, 
+symbol>'.
+
+[7m32[0m       
+await query.update([{
+[7m  [0m [91m      
+            ~~~~~~[0m
+[96msrc/scripts/disab
+le-shipping-requiremen
+ts.ts[0m:[93m57[0m:
+[93m8[0m - 
+[91merror[0m[90m 
+TS2304: [0mCannot 
+find name 
+'variantManager'.
+
+[7m57[0m   if 
+(!variantManager) {
+[7m  [0m [91m      
+ ~~~~~~~~~~~~~~[0m
+[96msrc/scripts/fix-s
+hipping-requirement.ts
+[0m:[93m30[0m:[93m
+19[0m - 
+[91merror[0m[90m 
+TS2339: [0mProperty 
+'update' does not 
+exist on type 'Omit<Re
+moteQueryFunction, 
+symbol>'.
+
+[7m30[0m       
+await query.update([
+[7m  [0m [91m      
+            ~~~~~~[0m
+[96msrc/scripts/remov
+e-shipping-options.ts
+[0m:[93m36[0m:[93m2
+1[0m - 
+[91merror[0m[90m 
+TS2339: [0mProperty 
+'delete' does not 
+exist on type 'Omit<Re
+moteQueryFunction, 
+symbol>'.
+
+[7m36[0m         
+await query.delete([{
+[7m  [0m [91m      
+              
+~~~~~~[0m
+[96msrc/scripts/updat
+e-shipping-price.ts[0
+m:[93m32[0m:[93m48
+[0m - 
+[91merror[0m[90m 
+TS2554: [0mExpected 
+2-3 arguments, but 
+got 1.
+
+[7m32[0m            
+         await pricing
+ModuleService.updatePr
+iceSets([
+[7m  [0m [91m      
+                      
+                   
+~~~~~~~~~~~~~~~[0m
+
+  [96mnode_modules/@m
+edusajs/types/dist/pri
+cing/service.d.ts[0m:
+[93m395[0m:[93m33[
+0m
+    [7m395[0m     
+updatePriceSets(id: 
+string, data: 
+UpdatePriceSetDTO, 
+sharedContext?: 
+Context): 
+Promise<PriceSetDTO>;
+    [7m   [0m [96m 
+                      
+         ~~~~~~~~~~~~~
+~~~~~~~~~~[0m
+    An argument for 
+'data' was not 
+provided.
+
+[33mwarn[39m:    Backend build completed with errors (9.87s)
+[32minfo[39m:    Frontend build completed successfully (38.62s)

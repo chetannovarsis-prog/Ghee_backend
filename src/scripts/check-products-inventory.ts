@@ -40,7 +40,7 @@ export default async function checkProductsInventory({ container }: ExecArgs) {
     const report = productsSafe.flatMap(p => p.variants.map(v => {
         const link = variantInventoryItems.find(i => i.variant_id === v.id)
         const level = link ? inventoryLevels.find(l => l.inventory_item_id === link.inventory_item_id) : null
-        return `Product: ${p.title} | Category: ${p.categories?.map(c => c.name).join(", ")} | Variant: ${v.title} | Stock: ${level ? level.stocked_quantity : "N/A"}`
+        return `Product: ${p.title} | Category: ${p.categories?.map(c => c!.name).join(", ")} | Variant: ${v.title} | Stock: ${level ? level.stocked_quantity : "N/A"}`
     })).join("\n")
 
     console.log(report)
