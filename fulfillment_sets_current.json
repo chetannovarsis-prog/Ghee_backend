@@ -1,0 +1,170 @@
+npm warn Unknown project config "public-hoist-pattern". This will stop working in the next major version of npm.
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Executing script at ./src/scripts/check-fulfillment-sets.ts...
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    No link to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\links. skipped.
+Loading Razorpay Service file
+Loading Razorpay Module index.ts
+Imported RazorpayProviderService: [class RazorpayProviderService extends AbstractPaymentProvider] {
+  identifier: 'razorpay-copy'
+}
+Exporting services: [
+  [class RazorpayProviderService extends AbstractPaymentProvider] {
+    identifier: 'razorpay-copy'
+  }
+]
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+Loading Razorpay Service file
+Loading Razorpay Module index.ts
+Imported RazorpayProviderService: [class RazorpayProviderService extends AbstractPaymentProvider] {
+  identifier: 'razorpay'
+}
+Exporting services: [
+  [class RazorpayProviderService extends AbstractPaymentProvider] {
+    identifier: 'razorpay'
+  }
+]
+[32minfo[39m:    No workflow to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No subscriber to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    Found 1 fulfillment sets:
+[
+  {
+    "id": "fuset_01KGVJ6GPT32YA3C5REH61Z0NT",
+    "name": "India Warehouse delivery",
+    "type": "shipping",
+    "metadata": null,
+    "created_at": "2026-02-07T08:06:23.707Z",
+    "updated_at": "2026-02-11T07:03:53.733Z",
+    "deleted_at": null,
+    "service_zones": [
+      {
+        "id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+        "name": "Europe",
+        "fulfillment_set_id": "fuset_01KGVJ6GPT32YA3C5REH61Z0NT",
+        "metadata": null,
+        "created_at": "2026-02-07T08:06:23.707Z",
+        "updated_at": "2026-02-07T08:06:23.707Z",
+        "deleted_at": null,
+        "geo_zones": [
+          {
+            "id": "fgz_01KGVJ6GPSW20EQYCN78HAS6S6",
+            "type": "country",
+            "country_code": "gb",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPSV1DREDG4MWF45WEY",
+            "type": "country",
+            "country_code": "de",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPSTCWYYSBDXWZFM969",
+            "type": "country",
+            "country_code": "dk",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPS14JHQ1D7QW7JWVCP",
+            "type": "country",
+            "country_code": "se",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPT19JDHVGPEFBARM6V",
+            "type": "country",
+            "country_code": "fr",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPTX7ZC4YQ1X4XQREWW",
+            "type": "country",
+            "country_code": "es",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01KGVJ6GPTRVT1ZBT0FCTDKZYY",
+            "type": "country",
+            "country_code": "it",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KGVJ6GPTYSRP1GQX1P08ADPE",
+            "metadata": null,
+            "created_at": "2026-02-07T08:06:23.708Z",
+            "updated_at": "2026-02-07T08:06:23.708Z",
+            "deleted_at": null
+          }
+        ]
+      },
+      {
+        "id": "serzo_01KH5QMMDY7VRHC1AD2T0F1EE7",
+        "name": "India",
+        "fulfillment_set_id": "fuset_01KGVJ6GPT32YA3C5REH61Z0NT",
+        "metadata": null,
+        "created_at": "2026-02-11T06:53:53.471Z",
+        "updated_at": "2026-02-11T06:53:53.471Z",
+        "deleted_at": null,
+        "geo_zones": [
+          {
+            "id": "fgz_01KH5QMMDW8G5MNYNNGVA7BBN5",
+            "type": "country",
+            "country_code": "in",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01KH5QMMDY7VRHC1AD2T0F1EE7",
+            "metadata": null,
+            "created_at": "2026-02-11T06:53:53.471Z",
+            "updated_at": "2026-02-11T06:53:53.471Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    ]
+  }
+]
+[32minfo[39m:    Finished executing script.

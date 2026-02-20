@@ -1,0 +1,8 @@
+Product: Multigrain Atta | Category: Atta | Variant: 1 Pack | Stock: 707
+Product: Whole Wheat Atta | Category: Atta | Variant: 1 Pack | Stock: 779
+Product: Bajra Atta | Category: Atta | Variant: 1 Pack | Stock: 990
+Product: Jowar Atta | Category: Atta | Variant: 1 Pack | Stock: 745
+Product: Sattu | Category: Atta | Variant: 500g | Stock: 627
+Product: Ghee | Category: Ghee | Variant: 500g Bottle | Stock: 565
+Product: Moringa Sattu | Category: Atta, Health | Variant: 500g | Stock: 514
+Product: Gousarram Capsule | Category: Health | Variant: 30 pcs Bottle | Stock: 810

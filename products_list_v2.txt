@@ -1,0 +1,46 @@
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Executing script at ./src/scripts/check-products.ts...
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    No link to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\links. skipped.
+Loading Razorpay Service file
+Loading Razorpay Module index.ts
+Imported RazorpayProviderService: [class RazorpayProviderService extends AbstractPaymentProvider] {
+  identifier: 'razorpay-copy'
+}
+Exporting services: [
+  [class RazorpayProviderService extends AbstractPaymentProvider] {
+    identifier: 'razorpay-copy'
+  }
+]
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+Loading Razorpay Service file
+Loading Razorpay Module index.ts
+Imported RazorpayProviderService: [class RazorpayProviderService extends AbstractPaymentProvider] {
+  identifier: 'razorpay'
+}
+Exporting services: [
+  [class RazorpayProviderService extends AbstractPaymentProvider] {
+    identifier: 'razorpay'
+  }
+]
+[32minfo[39m:    No workflow to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No subscriber to load from D:\indore\Novarsis\Medusa\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    Found 12 products:
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé (index) Γöé title                              Γöé categories                    Γöé collection                   Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé 0       Γöé 'A2 Gir Cow Ghee - Dolchi'         Γöé ''                            Γöé 'Bilona Ghee'                Γöé
+Γöé 1       Γöé 'Bilona-Churned Desi Buffalo Ghee' Γöé 'A2 Ghee'                     Γöé 'Bilona Ghee'                Γöé
+Γöé 2       Γöé 'Ghee Giants Combo - 5L + 5L'      Γöé ''                            Γöé 'Bilona Ghee'                Γöé
+Γöé 3       Γöé 'New ghee'                         Γöé ''                            Γöé 'Bilona Ghee'                Γöé
+Γöé 4       Γöé 'A2 ghee'                          Γöé 'A2 Ghee'                     Γöé 'Bilona Ghee'                Γöé
+Γöé 5       Γöé 'Haldhar Sattu'                    Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 6       Γöé 'Haldhar Jowar Atta'               Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 7       Γöé 'Haldhar Multi Grain Atta'         Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 8       Γöé 'Haldhar Whole Wheat Atta'         Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 9       Γöé 'Haldhar Moong Multigrain Atta'    Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 10      Γöé 'Haldhar Moringa Sattu Mix'        Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+Γöé 11      Γöé 'Gousaaram Goumutra Capsules'      Γöé 'Traditional Flours & Health' Γöé 'Haldhar Traditional Flours' Γöé
+ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+[32minfo[39m:    Finished executing script.
