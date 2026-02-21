@@ -10,8 +10,8 @@ module.exports = defineConfig({
     databaseUrl: process.env.DATABASE_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
-      adminCors: process.env.ADMIN_CORS!,
-      authCors: process.env.AUTH_CORS!,
+      adminCors: process.env.ADMIN_CORS + (process.env.RENDER_EXTERNAL_URL ? `,${process.env.RENDER_EXTERNAL_URL}` : ""),
+      authCors: process.env.AUTH_CORS + (process.env.RENDER_EXTERNAL_URL ? `,${process.env.RENDER_EXTERNAL_URL}` : ""),
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
