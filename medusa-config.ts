@@ -4,7 +4,7 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
   admin: {
-    disable: process.env.DISABLE_ADMIN === "true",
+    disable: false,
     path: "/app",
     backendUrl: process.env.MEDUSA_BACKEND_URL || process.env.RENDER_EXTERNAL_URL || "https://ghee-backend-ewtj.onrender.com",
   },
