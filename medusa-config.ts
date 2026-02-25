@@ -2,6 +2,29 @@ import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+// Aggressive production detection
+// Foolproof indicator: Render is Linux, you are on Windows. 
+// Also check for Render-specific PORT.
+const isProduction = process.env.NODE_ENV === "production" ||
+  !!process.env.RENDER ||
+  process.platform !== "win32" ||
+  process.env.PORT === "10000" ||
+  process.env.ADMIN_URL?.includes("onrender.com") ||
+  process.env.DATABASE_URL?.includes("render.com")
+
+// const productionStoreUrl = "https://full-ghee.vercel.app"
+
+// Hard-code production URLs if we detect we are NOT on a local machine
+const storeUrl = "https://full-ghee.vercel.app"
+const googleCallbackUrl = "https://full-ghee.vercel.app/auth/google/callback"
+
+console.log("--- MEDUSA CONFIG DIAGNOSTICS ---")
+console.log("NODE_ENV:", process.env.NODE_ENV)
+console.log("IS_PRODUCTION:", isProduction)
+console.log("STORE_URL:", storeUrl)
+console.log("GOOGLE_CALLBACK_URL:", googleCallbackUrl)
+console.log("--- END DIAGNOSTICS ---")
+
 export default defineConfig({
   admin: {
     disable: false,
@@ -11,19 +34,22 @@ export default defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
-      storeCors: process.env.STORE_CORS || "http://localhost:8000",
+      storeCors: process.env.STORE_CORS || `${storeUrl},https://docs.medusajs.com`,
       adminCors: process.env.ADMIN_CORS || "http://localhost:5173,http://localhost:9000,https://ghee-backend-ewtj.onrender.com",
-      authCors: process.env.AUTH_CORS || "http://localhost:5173,http://localhost:9000,http://localhost:8000,https://ghee-backend-ewtj.onrender.com",
+      authCors: process.env.AUTH_CORS || `http://localhost:5173,http://localhost:9000,${storeUrl},https://ghee-backend-ewtj.onrender.com`,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   },
   modules: {
+    fileService: {
+      resolve: "./src/services/file",
+    },
     [Modules.PAYMENT]: {
       resolve: "@medusajs/payment",
       options: {
         providers: [
-
+          /* Razorpay - Commented out, preserved for future use
           {
             resolve: "./src/modules/razorpay/index",
             id: "razorpay",
@@ -31,6 +57,12 @@ export default defineConfig({
               key_id: process.env.RAZORPAY_KEY_ID,
               key_secret: process.env.RAZORPAY_KEY_SECRET,
             },
+          },
+          */
+          {
+            resolve: "./src/modules/system-payment",
+            id: "manual",
+            options: {},
           },
         ],
       },
@@ -50,7 +82,7 @@ export default defineConfig({
             options: {
               clientId: process.env.GOOGLE_CLIENT_ID,
               clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-              callbackUrl: `${process.env.STORE_URL}/auth/google/callback`,
+              callbackUrl: googleCallbackUrl,
             },
           },
         ],
@@ -65,3 +97,4 @@ export default defineConfig({
     },
   },
 })
+
