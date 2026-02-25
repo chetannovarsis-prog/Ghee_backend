@@ -1,98 +1,98 @@
 import { Client } from "pg"
+import { ExecArgs } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
 
 /**
- * Fixes the "cart items require shipping profiles not satisfied by current
- * shipping methods" error by directly updating the database via raw SQL.
- *
- * Uses the same pattern as fix-payment-provider-constraint.ts which works
- * reliably on Render. The ORM-based approach silently ignores shipping_profile_id
- * on products because it's managed through Medusa's link module.
+ * Fixes the "cart items require shipping profiles not satisfied" error.
+ * 
+ * - shipping_option.shipping_profile_id: updated via raw SQL (direct column)
+ * - product → shipping_profile link: updated via updateProductsWorkflow (link table)
  */
-export default async function fixShippingProfiles({ container }) {
-    const logger = container.resolve("logger")
+export default async function fixShippingProfiles({ container }: ExecArgs) {
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+    const fulfillmentModule = container.resolve(Modules.FULFILLMENT)
+    const productModule = container.resolve(Modules.PRODUCT)
 
     const databaseUrl = process.env.DATABASE_URL
     if (!databaseUrl) {
-        logger.error("[fix-shipping] DATABASE_URL is not set. Cannot proceed.")
+        logger.error("[fix-shipping] DATABASE_URL not set")
         return
     }
 
-    const client = new Client({ connectionString: databaseUrl })
+    logger.info("[fix-shipping] Starting...")
 
+    // ── 1. Find the default shipping profile via Medusa module ──────────────────
+    const allProfiles = await fulfillmentModule.listShippingProfiles()
+    logger.info(`[fix-shipping] Found ${allProfiles.length} shipping profile(s):`)
+    allProfiles.forEach((p: any) => logger.info(`  → [${p.type}] "${p.name}" | ${p.id}`))
+
+    if (allProfiles.length === 0) {
+        logger.error("[fix-shipping] No profiles found. Run setup-india-shipping.ts first.")
+        return
+    }
+
+    const targetProfile = allProfiles.find((p: any) => p.type === "default") || allProfiles[0]
+    logger.info(`[fix-shipping] Target profile: "${targetProfile.name}" (${targetProfile.id})`)
+
+    // ── 2. Update shipping_option via raw SQL (HAS the column directly) ─────────
+    const client = new Client({ connectionString: databaseUrl })
     try {
         await client.connect()
-        logger.info("[fix-shipping] Connected to database.")
 
-        // Step 1: Show all shipping profiles
-        const profileResult = await client.query(`
-            SELECT id, name, type
-            FROM shipping_profile
-            WHERE deleted_at IS NULL
-            ORDER BY type
-        `)
-
-        logger.info(`[fix-shipping] Found ${profileResult.rows.length} shipping profile(s):`)
-        profileResult.rows.forEach(p =>
-            logger.info(`  → ${p.type.padEnd(10)} | ${p.name} | ${p.id}`)
-        )
-
-        if (profileResult.rows.length === 0) {
-            logger.error("[fix-shipping] No shipping profiles found! Cannot fix.")
-            return
-        }
-
-        // Pick the 'default' type profile, or fall back to the first one
-        const targetProfile =
-            profileResult.rows.find(p => p.type === "default") || profileResult.rows[0]
-        logger.info(`[fix-shipping] Target profile: "${targetProfile.name}" (${targetProfile.id})`)
-
-        // Step 2: Show current shipping options and their profiles
         const optResult = await client.query(`
-            SELECT id, name, shipping_profile_id
-            FROM shipping_option
-            WHERE deleted_at IS NULL
-        `)
-        logger.info(`[fix-shipping] Found ${optResult.rows.length} shipping option(s):`)
-        optResult.rows.forEach(o =>
-            logger.info(`  ${o.shipping_profile_id === targetProfile.id ? "✅" : "❌"} "${o.name}" → ${o.shipping_profile_id}`)
-        )
-
-        // Step 3: Update ALL shipping options to target profile (raw SQL)
-        const updateOptionsResult = await client.query(`
             UPDATE shipping_option
             SET shipping_profile_id = $1, updated_at = NOW()
             WHERE deleted_at IS NULL
-              AND shipping_profile_id != $1
         `, [targetProfile.id])
-        logger.info(`[fix-shipping] Updated ${updateOptionsResult.rowCount} shipping option(s) to target profile.`)
+        logger.info(`[fix-shipping] Updated ${optResult.rowCount} shipping option(s) → "${targetProfile.name}"`)
 
-        // Step 4: Show current products and their profiles
-        const prodResult = await client.query(`
-            SELECT id, title, shipping_profile_id
-            FROM product
-            WHERE deleted_at IS NULL
-            ORDER BY title
-        `)
-        logger.info(`[fix-shipping] Found ${prodResult.rows.length} product(s):`)
-        prodResult.rows.forEach(p =>
-            logger.info(`  ${p.shipping_profile_id === targetProfile.id ? "✅" : "❌"} "${p.title}" → ${p.shipping_profile_id}`)
-        )
+        // Also log current shipping options for diagnostics
+        const opts = await client.query(`SELECT id, name, shipping_profile_id FROM shipping_option WHERE deleted_at IS NULL`)
+        opts.rows.forEach(o => logger.info(`  so: "${o.name}" → profile=${o.shipping_profile_id}`))
 
-        // Step 5: Update ALL products to target profile (raw SQL)
-        const updateProdsResult = await client.query(`
-            UPDATE product
-            SET shipping_profile_id = $1, updated_at = NOW()
-            WHERE deleted_at IS NULL
-        `, [targetProfile.id])
-        logger.info(`[fix-shipping] Updated ${updateProdsResult.rowCount} product(s) to target profile.`)
-
-        logger.info("[fix-shipping] ✅ Fix complete! All products and shipping options now share the same profile.")
-        logger.info("[fix-shipping] Clear your cart and try checkout again.")
-
-    } catch (err: any) {
-        logger.error(`[fix-shipping] Error: ${err.message}`)
-        if (err.stack) logger.error(err.stack)
     } finally {
         await client.end()
     }
+
+    // ── 3. Update product → shipping_profile LINK via updateProductsWorkflow ────
+    // This is the correct Medusa v2 approach - the workflow handles the link table
+    const [products] = await productModule.listAndCountProducts({}, { take: 500 })
+    logger.info(`[fix-shipping] Found ${products.length} product(s). Updating links...`)
+
+    if (products.length > 0) {
+        try {
+            await updateProductsWorkflow(container).run({
+                input: {
+                    products: products.map((p: any) => ({
+                        id: p.id,
+                        shipping_profile_id: targetProfile.id,
+                    }))
+                }
+            })
+            logger.info(`[fix-shipping] ✅ Updated ${products.length} product(s) via workflow.`)
+        } catch (err: any) {
+            logger.error(`[fix-shipping] Workflow error: ${err.message}`)
+            // Fallback: try remoteLink directly
+            logger.info("[fix-shipping] Trying remoteLink fallback...")
+            const remoteLink = container.resolve(ContainerRegistrationKeys.REMOTE_LINK)
+            for (const p of products) {
+                try {
+                    await remoteLink.create([{
+                        [Modules.PRODUCT]: { product_id: p.id },
+                        [Modules.FULFILLMENT]: { shipping_profile_id: targetProfile.id },
+                    }])
+                    logger.info(`  → Linked product ${p.id} → ${targetProfile.id}`)
+                } catch (linkErr: any) {
+                    if (linkErr.message?.includes("already exists") || linkErr.code === "23505") {
+                        logger.info(`  → Already linked: ${p.id}`)
+                    } else {
+                        logger.warn(`  → Link failed for ${p.id}: ${linkErr.message}`)
+                    }
+                }
+            }
+        }
+    }
+
+    logger.info("[fix-shipping] ✅ Done! Clear your cart and try checkout again.")
 }
