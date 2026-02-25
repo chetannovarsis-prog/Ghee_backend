@@ -42,9 +42,8 @@ export default defineConfig({
     }
   },
   modules: {
-    fileService: {
-      resolve: "./src/services/file",
-    },
+    /* fileService was removed — resolve path './src/services/file' does not exist.
+       Medusa will use its built-in default local file service. */
     [Modules.PAYMENT]: {
       resolve: "@medusajs/payment",
       options: {
