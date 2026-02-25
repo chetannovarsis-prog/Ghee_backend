@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && mkdir -p public && cp -r .medusa/server/public/admin public/ && ls -R public/admin && medusa db:migrate && medusa exec ./src/scripts/link-manual-to-india.ts",
+    "build": "medusa build && mkdir -p public && cp -r .medusa/server/public/admin public/ && ls -R public/admin && medusa db:migrate && medusa exec ./src/scripts/fix-payment-provider-constraint.ts",
     "db:migrate": "medusa db:migrate",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "start": "medusa start",
