@@ -29,9 +29,9 @@ export default async function fixShippingProfileLoader({ container }: LoaderOpti
         const opts = await fulfillmentModule.listShippingOptions({}, {})
         const mismatchedOpts = opts.filter((o: any) => o.shipping_profile_id !== target.id)
         if (mismatchedOpts.length > 0) {
-            await fulfillmentModule.updateShippingOptions(
-                mismatchedOpts.map((o: any) => ({ id: o.id, shipping_profile_id: target.id }))
-            )
+            for (const o of mismatchedOpts) {
+                await fulfillmentModule.updateShippingOptions(o.id, { shipping_profile_id: target.id } as any)
+            }
             logger?.info(`[fix-shipping] Fixed ${mismatchedOpts.length} shipping option(s).`)
         }
 
@@ -41,12 +41,9 @@ export default async function fixShippingProfileLoader({ container }: LoaderOpti
             (p: any) => p.shipping_profile_id !== target.id
         )
         if (mismatchedProducts.length > 0) {
-            await productModule.updateProducts(
-                mismatchedProducts.map((p: any) => ({
-                    id: p.id,
-                    shipping_profile_id: target.id,
-                }))
-            )
+            for (const p of mismatchedProducts) {
+                await productModule.updateProducts(p.id, { shipping_profile_id: target.id } as any)
+            }
             logger?.info(`[fix-shipping] Fixed ${mismatchedProducts.length} product(s).`)
         }
 

@@ -37,10 +37,7 @@ export default async function fixShippingProfiles({ container }: ExecArgs) {
             logger.info(`  ${match} ${opt.name} -> profile=${opt.shipping_profile_id}`)
 
             if (opt.shipping_profile_id !== targetProfile.id) {
-                await fulfillmentModule.updateShippingOptions([{
-                    id: opt.id,
-                    shipping_profile_id: targetProfile.id,
-                }])
+                await fulfillmentModule.updateShippingOptions(opt.id, { shipping_profile_id: targetProfile.id } as any)
                 logger.info(`  ↳ Updated shipping option "${opt.name}" to profile ${targetProfile.id}`)
             }
         }
@@ -54,9 +51,11 @@ export default async function fixShippingProfiles({ container }: ExecArgs) {
             shipping_profile_id: targetProfile.id,
         }))
 
-        if (updates.length > 0) {
-            await productModule.updateProducts(updates)
-            logger.info(`✅ Updated ${updates.length} products to use profile: ${targetProfile.name}`)
+        if (products.length > 0) {
+            for (const p of products) {
+                await productModule.updateProducts(p.id, { shipping_profile_id: targetProfile.id } as any)
+            }
+            logger.info(`✅ Updated ${products.length} products to use profile: ${targetProfile.name}`)
         }
 
         logger.info("=== Fix complete! All products + shipping options now share the same profile. ===")
