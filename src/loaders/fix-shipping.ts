@@ -1,58 +1,66 @@
+import { Client } from "pg"
 import { LoaderOptions } from "@medusajs/framework/types"
-import { Modules } from "@medusajs/framework/utils"
 
 /**
  * Startup loader: auto-discovered by Medusa from src/loaders/
- * Ensures all products and all shipping options share the same shipping profile
- * so cart completion doesn't fail with:
- * "The cart items require shipping profiles not satisfied by the current shipping methods"
+ * Uses raw SQL to ensure all products and shipping options share the same
+ * shipping profile, preventing the cart completion error:
+ * "The cart items require shipping profiles not satisfied by shipping methods"
  */
 export default async function fixShippingProfileLoader({ container }: LoaderOptions) {
     const logger = container.resolve("logger")
 
-    try {
-        const fulfillmentModule = container.resolve(Modules.FULFILLMENT)
-        const productModule = container.resolve(Modules.PRODUCT)
+    const databaseUrl = process.env.DATABASE_URL
+    if (!databaseUrl) {
+        logger?.warn("[fix-shipping] DATABASE_URL not set, skipping.")
+        return
+    }
 
-        // 1. Get all shipping profiles
-        const profiles = await fulfillmentModule.listShippingProfiles({}, {})
+    const client = new Client({ connectionString: databaseUrl })
+
+    try {
+        await client.connect()
+
+        // Find the default shipping profile
+        const { rows: profiles } = await client.query(`
+            SELECT id, name, type FROM shipping_profile
+            WHERE deleted_at IS NULL ORDER BY type LIMIT 1
+        `)
+
         if (profiles.length === 0) {
             logger?.debug("[fix-shipping] No shipping profiles found, skipping.")
+            await client.end()
             return
         }
 
-        // Prefer 'default' type, otherwise use first
-        const target = profiles.find((p: any) => p.type === "default") || profiles[0]
-        logger?.debug(`[fix-shipping] Using profile: "${target.name}" (${target.id})`)
+        // Prefer 'default' type — pick it if it's first, else take what we have
+        const { rows: allProfiles } = await client.query(`
+            SELECT id, name, type FROM shipping_profile WHERE deleted_at IS NULL
+        `)
+        const target = allProfiles.find(p => p.type === "default") || allProfiles[0]
 
-        // 2. Align ALL shipping options to target profile
-        const opts = await fulfillmentModule.listShippingOptions({}, {})
-        const mismatchedOpts = opts.filter((o: any) => o.shipping_profile_id !== target.id)
-        if (mismatchedOpts.length > 0) {
-            for (const o of mismatchedOpts) {
-                await fulfillmentModule.updateShippingOptions(o.id, { shipping_profile_id: target.id } as any)
-            }
-            logger?.info(`[fix-shipping] Fixed ${mismatchedOpts.length} shipping option(s).`)
-        }
+        // Update shipping options
+        const opts = await client.query(`
+            UPDATE shipping_option SET shipping_profile_id = $1, updated_at = NOW()
+            WHERE deleted_at IS NULL AND shipping_profile_id != $1
+        `, [target.id])
 
-        // 3. Align ALL products to target profile
-        const [products] = await productModule.listAndCountProducts({}, { take: 500 })
-        const mismatchedProducts = products.filter(
-            (p: any) => p.shipping_profile_id !== target.id
-        )
-        if (mismatchedProducts.length > 0) {
-            for (const p of mismatchedProducts) {
-                await productModule.updateProducts(p.id, { shipping_profile_id: target.id } as any)
-            }
-            logger?.info(`[fix-shipping] Fixed ${mismatchedProducts.length} product(s).`)
-        }
+        // Update products
+        const prods = await client.query(`
+            UPDATE product SET shipping_profile_id = $1, updated_at = NOW()
+            WHERE deleted_at IS NULL AND (shipping_profile_id != $1 OR shipping_profile_id IS NULL)
+        `, [target.id])
 
-        if (mismatchedOpts.length === 0 && mismatchedProducts.length === 0) {
+        if (opts.rowCount && opts.rowCount > 0)
+            logger?.info(`[fix-shipping] Fixed ${opts.rowCount} shipping option(s) → "${target.name}"`)
+        if (prods.rowCount && prods.rowCount > 0)
+            logger?.info(`[fix-shipping] Fixed ${prods.rowCount} product(s) → "${target.name}"`)
+        if (!opts.rowCount && !prods.rowCount)
             logger?.debug("[fix-shipping] All shipping profiles already aligned. ✅")
-        }
 
     } catch (err: any) {
-        // Non-fatal: don't crash the server
-        logger?.warn(`[fix-shipping] Could not auto-fix shipping profiles: ${err.message}`)
+        logger?.warn(`[fix-shipping] Loader error: ${err.message}`)
+    } finally {
+        try { await client.end() } catch { }
     }
 }

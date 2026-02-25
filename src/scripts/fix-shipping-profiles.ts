@@ -1,68 +1,98 @@
-import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import { Client } from "pg"
 
 /**
  * Fixes the "cart items require shipping profiles not satisfied by current
- * shipping methods" error by ensuring all products and all shipping options
- * share the SAME shipping profile.
+ * shipping methods" error by directly updating the database via raw SQL.
+ *
+ * Uses the same pattern as fix-payment-provider-constraint.ts which works
+ * reliably on Render. The ORM-based approach silently ignores shipping_profile_id
+ * on products because it's managed through Medusa's link module.
  */
-export default async function fixShippingProfiles({ container }: ExecArgs) {
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-    const fulfillmentModule = container.resolve(Modules.FULFILLMENT)
-    const productModule = container.resolve(Modules.PRODUCT)
+export default async function fixShippingProfiles({ container }) {
+    const logger = container.resolve("logger")
 
-    logger.info("=== Fix Shipping Profile Mismatch ===")
+    const databaseUrl = process.env.DATABASE_URL
+    if (!databaseUrl) {
+        logger.error("[fix-shipping] DATABASE_URL is not set. Cannot proceed.")
+        return
+    }
+
+    const client = new Client({ connectionString: databaseUrl })
 
     try {
-        // 1. List all shipping profiles
-        const profiles = await fulfillmentModule.listShippingProfiles()
-        logger.info(`Found ${profiles.length} shipping profile(s):`)
-        profiles.forEach(p => logger.info(`  > ${p.name} | type=${p.type} | id=${p.id}`))
+        await client.connect()
+        logger.info("[fix-shipping] Connected to database.")
 
-        if (profiles.length === 0) {
-            logger.error("No shipping profiles found. Cannot fix. Run setup-india-shipping.ts first.")
+        // Step 1: Show all shipping profiles
+        const profileResult = await client.query(`
+            SELECT id, name, type
+            FROM shipping_profile
+            WHERE deleted_at IS NULL
+            ORDER BY type
+        `)
+
+        logger.info(`[fix-shipping] Found ${profileResult.rows.length} shipping profile(s):`)
+        profileResult.rows.forEach(p =>
+            logger.info(`  → ${p.type.padEnd(10)} | ${p.name} | ${p.id}`)
+        )
+
+        if (profileResult.rows.length === 0) {
+            logger.error("[fix-shipping] No shipping profiles found! Cannot fix.")
             return
         }
 
-        // Use the 'default' type profile, or fall back to the first one
-        const targetProfile = profiles.find(p => p.type === "default") || profiles[0]
-        logger.info(`Target profile: ${targetProfile.name} (${targetProfile.id})`)
+        // Pick the 'default' type profile, or fall back to the first one
+        const targetProfile =
+            profileResult.rows.find(p => p.type === "default") || profileResult.rows[0]
+        logger.info(`[fix-shipping] Target profile: "${targetProfile.name}" (${targetProfile.id})`)
 
-        // 2. List all shipping options and check their profile
-        const shippingOptions = await fulfillmentModule.listShippingOptions()
-        logger.info(`Found ${shippingOptions.length} shipping option(s):`)
+        // Step 2: Show current shipping options and their profiles
+        const optResult = await client.query(`
+            SELECT id, name, shipping_profile_id
+            FROM shipping_option
+            WHERE deleted_at IS NULL
+        `)
+        logger.info(`[fix-shipping] Found ${optResult.rows.length} shipping option(s):`)
+        optResult.rows.forEach(o =>
+            logger.info(`  ${o.shipping_profile_id === targetProfile.id ? "✅" : "❌"} "${o.name}" → ${o.shipping_profile_id}`)
+        )
 
-        for (const opt of shippingOptions) {
-            const match = opt.shipping_profile_id === targetProfile.id ? "✅" : "❌"
-            logger.info(`  ${match} ${opt.name} -> profile=${opt.shipping_profile_id}`)
+        // Step 3: Update ALL shipping options to target profile (raw SQL)
+        const updateOptionsResult = await client.query(`
+            UPDATE shipping_option
+            SET shipping_profile_id = $1, updated_at = NOW()
+            WHERE deleted_at IS NULL
+              AND shipping_profile_id != $1
+        `, [targetProfile.id])
+        logger.info(`[fix-shipping] Updated ${updateOptionsResult.rowCount} shipping option(s) to target profile.`)
 
-            if (opt.shipping_profile_id !== targetProfile.id) {
-                await fulfillmentModule.updateShippingOptions(opt.id, { shipping_profile_id: targetProfile.id } as any)
-                logger.info(`  ↳ Updated shipping option "${opt.name}" to profile ${targetProfile.id}`)
-            }
-        }
+        // Step 4: Show current products and their profiles
+        const prodResult = await client.query(`
+            SELECT id, title, shipping_profile_id
+            FROM product
+            WHERE deleted_at IS NULL
+            ORDER BY title
+        `)
+        logger.info(`[fix-shipping] Found ${prodResult.rows.length} product(s):`)
+        prodResult.rows.forEach(p =>
+            logger.info(`  ${p.shipping_profile_id === targetProfile.id ? "✅" : "❌"} "${p.title}" → ${p.shipping_profile_id}`)
+        )
 
-        // 3. Update ALL products to use the target shipping profile
-        const [products, count] = await productModule.listAndCountProducts({}, { take: 500 })
-        logger.info(`Found ${count} products. Updating their shipping profiles...`)
+        // Step 5: Update ALL products to target profile (raw SQL)
+        const updateProdsResult = await client.query(`
+            UPDATE product
+            SET shipping_profile_id = $1, updated_at = NOW()
+            WHERE deleted_at IS NULL
+        `, [targetProfile.id])
+        logger.info(`[fix-shipping] Updated ${updateProdsResult.rowCount} product(s) to target profile.`)
 
-        const updates = products.map(p => ({
-            id: p.id,
-            shipping_profile_id: targetProfile.id,
-        }))
-
-        if (products.length > 0) {
-            for (const p of products) {
-                await productModule.updateProducts(p.id, { shipping_profile_id: targetProfile.id } as any)
-            }
-            logger.info(`✅ Updated ${products.length} products to use profile: ${targetProfile.name}`)
-        }
-
-        logger.info("=== Fix complete! All products + shipping options now share the same profile. ===")
-        logger.info("Please clear your cart and try checkout again.")
+        logger.info("[fix-shipping] ✅ Fix complete! All products and shipping options now share the same profile.")
+        logger.info("[fix-shipping] Clear your cart and try checkout again.")
 
     } catch (err: any) {
-        logger.error(`Error: ${err.message}`)
+        logger.error(`[fix-shipping] Error: ${err.message}`)
         if (err.stack) logger.error(err.stack)
+    } finally {
+        await client.end()
     }
 }
