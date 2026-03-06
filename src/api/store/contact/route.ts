@@ -2,7 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { CONTACT_QUERY_MODULE } from "../../../modules/contact-query"
 import ContactQueryModuleService from "../../../modules/contact-query/service"
 
-export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const { first_name, last_name, email, subject, message } = req.body as {
     first_name: string
     last_name: string

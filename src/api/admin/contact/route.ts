@@ -2,7 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { CONTACT_QUERY_MODULE } from "../../../modules/contact-query"
 import ContactQueryModuleService from "../../../modules/contact-query/service"
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const contactQueryService: ContactQueryModuleService =
     req.scope.resolve(CONTACT_QUERY_MODULE)
 
