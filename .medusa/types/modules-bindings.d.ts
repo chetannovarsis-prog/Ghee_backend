@@ -24,6 +24,7 @@ import type { IWorkflowEngineService } from '@medusajs/framework/types'
 import type { ILockingModule } from '@medusajs/framework/types'
 import type { IFileModuleService } from '@medusajs/framework/types'
 import type EmailNotifications from '../../src/modules/email_notifications'
+import type ContactQuery from '../../src/modules/contact-query'
 
 declare module '@medusajs/framework/types' {
   interface ModuleImplementations {
@@ -52,6 +53,7 @@ declare module '@medusajs/framework/types' {
     'workflows': IWorkflowEngineService,
     'locking': ILockingModule,
     'file': IFileModuleService,
-    'email_notifications': InstanceType<(typeof EmailNotifications)['service']>
+    'email_notifications': InstanceType<(typeof EmailNotifications)['service']>,
+    'contactQuery': InstanceType<(typeof ContactQuery)['service']>
   }
 }
