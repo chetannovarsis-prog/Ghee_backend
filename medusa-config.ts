@@ -94,6 +94,9 @@ export default defineConfig({
         from: "onboarding@resend.dev",
       },
     },
+    "contactQuery": {
+      resolve: "./src/modules/contact-query",
+    },
   },
 })
 
