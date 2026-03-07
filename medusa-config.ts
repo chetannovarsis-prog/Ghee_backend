@@ -97,6 +97,9 @@ export default defineConfig({
     "contactQuery": {
       resolve: "./src/modules/contact-query",
     },
+    "productReview": {
+      resolve: "./src/modules/product-review",
+    },
   },
 })
 
