@@ -29,7 +29,7 @@ import {
 } from "@medusajs/framework/types"
 import crypto from "crypto"
 
-console.log("Loading ManualPaymentProvider Service file")
+
 
 class ManualPaymentProvider extends AbstractPaymentProvider {
   static identifier = "manual"
