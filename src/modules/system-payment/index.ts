@@ -1,4 +1,6 @@
 import ManualPaymentProvider from "./service"
 
-export default ManualPaymentProvider
+export default {
+  services: [ManualPaymentProvider],
+}
 
