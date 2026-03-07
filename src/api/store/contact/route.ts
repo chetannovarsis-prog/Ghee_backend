@@ -1,6 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { CONTACT_QUERY_MODULE } from "../../../modules/contact-query"
-import ContactQueryModuleService from "../../../modules/contact-query/service"
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const { first_name, last_name, email, subject, message } = req.body as {
@@ -15,7 +14,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(400).json({ message: "All fields are required." })
   }
 
-  const contactQueryService: ContactQueryModuleService =
+  const contactQueryService: any =
     req.scope.resolve(CONTACT_QUERY_MODULE)
 
   const query = await contactQueryService.createContactQueries({
